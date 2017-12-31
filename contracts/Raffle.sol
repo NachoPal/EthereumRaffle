@@ -3,7 +3,6 @@ pragma solidity ^0.4.19;
 
 contract Raffle {
 
-    //ESTOY AQUI AÑADIENDO EVENTOS
     event PlayerAdded(string name, uint numAttempts, int balance);
 
 
@@ -19,8 +18,8 @@ contract Raffle {
 
     mapping (address => Player) public players;
 
-    function isAregisteredPlayer(address _address) return(bool registered){
-        return players[_address].exists
+    function isAregisteredPlayer(address _address) private returns(bool registered){
+        registered = players[_address].exists;
     }
 
     function registerPlayer(string _name) {
@@ -30,20 +29,28 @@ contract Raffle {
         //Save in addresses array
         uint index = playersAddresses.push(msg.sender) - 1;
 
+        //Save in mapping(address => Player)
         players[msg.sender] = Player(index,true,_name,0,0);
+
+        //Call to the event
+        PlayerAdded(_name,0,0);
     }
 
     function getPlayersCount() public constant returns(uint count) {
-        return playersAddressIndex.length;
+        count = playersAddressIndex.length;
     }
 
-    function getPlayerAddressAtIndex(uint _index) public view return(address playerAddress){
-        return playersAddresses[index];
+    function getPlayerAddressAtIndex(uint _index) public view returns(address playerAddress){
+        playerAddress = playersAddresses[index];
     }
 
-    function getPlayerByAddress(address _playerAddress) public view return(string name, uint numAttemps, int balance) {
-        require(isAregisteredPlayer(address _playerAddress));
-        players[_playerAddress];
+    function getPlayerByAddress(address _playerAddress) public view returns(string name, uint numAttempts, int balance) {
+        //Check if we are trying to retrieve info from a existing Player
+        require(isAregisteredPlayer(_playerAddress));
+
+        name = players[_playerAddress].name;
+        numAttempts = players[_playerAddress].numAttempts;
+        balance = players[_playerAddress].balance;
     }
 
 }
