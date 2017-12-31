@@ -1,15 +1,15 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
 
 contract Raffle {
 
-    event PlayerAdded(string name, uint numAttempts, int balance);
+    //event PlayerAdded(bytes32 name, uint numAttempts, int balance);
 
 
     struct Player {
         uint index;
         bool exists;
-        string name;
+        bytes32 name;
         uint numAttempts;
         int balance;
     }
@@ -18,13 +18,13 @@ contract Raffle {
 
     mapping (address => Player) public players;
 
-    function isAregisteredPlayer(address _address) private returns(bool registered){
+    function isARegisteredPlayer(address _address) public view returns(bool registered){
         registered = players[_address].exists;
     }
 
-    function registerPlayer(string _name) {
+    function registerPlayer(bytes32 _name) public returns(address newPlayerAddress){
         //Check if the Player already exist
-        require(isARegisteredPlayer(msg.sender) == false);
+        //require(isARegisteredPlayer(msg.sender) == false);
 
         //Save in addresses array
         uint index = playersAddresses.push(msg.sender) - 1;
@@ -33,20 +33,22 @@ contract Raffle {
         players[msg.sender] = Player(index,true,_name,0,0);
 
         //Call to the event
-        PlayerAdded(_name,0,0);
+        //PlayerAdded(_name,0,0);
+
+        newPlayerAddress = msg.sender;
     }
 
     function getPlayersCount() public constant returns(uint count) {
-        count = playersAddressIndex.length;
+        count = playersAddresses.length;
     }
 
     function getPlayerAddressAtIndex(uint _index) public view returns(address playerAddress){
-        playerAddress = playersAddresses[index];
+        playerAddress = playersAddresses[_index];
     }
 
-    function getPlayerByAddress(address _playerAddress) public view returns(string name, uint numAttempts, int balance) {
+    function getPlayerByAddress(address _playerAddress) public view returns(bytes32 name, uint numAttempts, int balance) {
         //Check if we are trying to retrieve info from a existing Player
-        require(isAregisteredPlayer(_playerAddress));
+        //require(isARegisteredPlayer(_playerAddress));
 
         name = players[_playerAddress].name;
         numAttempts = players[_playerAddress].numAttempts;
