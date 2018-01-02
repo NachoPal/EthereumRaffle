@@ -20,7 +20,8 @@ contract TestRaffle {
         int expectedBalance = 0;
         int balance;
 
-        (name, numAttempts, balance) = raffle.getPlayerByAddress(msg.sender);
+        //(name, numAttempts, balance) = raffle.getPlayerByAddress(msg.sender);
+        raffle.getPlayerByAddress(msg.sender);
 
         Assert.equal(name, expectedName, "Player name registration didn't work.");
         Assert.equal(numAttempts, expectedNumAttempts, "Player numAttempts registration didn't work.");

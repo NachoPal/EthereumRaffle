@@ -1,9 +1,9 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.17;
 
 
 contract Raffle {
 
-    //event PlayerAdded(bytes32 name, uint numAttempts, int balance);
+    event PlayerAdded(bytes32 name, uint numAttempts, int balance);
 
 
     struct Player {
@@ -24,7 +24,7 @@ contract Raffle {
 
     function registerPlayer(bytes32 _name) public returns(address newPlayerAddress){
         //Check if the Player already exist
-        //require(isARegisteredPlayer(msg.sender) == false);
+        require(isARegisteredPlayer(msg.sender) == false);
 
         //Save in addresses array
         uint index = playersAddresses.push(msg.sender) - 1;
@@ -33,16 +33,19 @@ contract Raffle {
         players[msg.sender] = Player(index,true,_name,0,0);
 
         //Call to the event
-        //PlayerAdded(_name,0,0);
+        PlayerAdded(_name,0,0);
 
         newPlayerAddress = msg.sender;
     }
 
-    function getPlayersCount() public constant returns(uint count) {
+    function getPlayersCount() public view returns(uint count) {
         count = playersAddresses.length;
     }
 
     function getPlayerAddressAtIndex(uint _index) public view returns(address playerAddress){
+        //Make sure I don't try to read a index that doesn't exist??
+        require(_index < getPlayersCount());
+
         playerAddress = playersAddresses[_index];
     }
 
