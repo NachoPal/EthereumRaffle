@@ -1,7 +1,7 @@
-var PlayerCRUD = artifacts.require("./PlayerCRUD.sol");
-var Raffle = artifacts.require("./Raffle.sol");
+var Players = artifacts.require("./Players.sol");
+var Raffles = artifacts.require("./Raffles.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(PlayerCRUD);
-  deployer.deploy(Raffle);
+  deployer.deploy(Players);
+  deployer.deploy(Raffles);
 };

@@ -8,18 +8,18 @@
       "type": "constructor"
     }
   ],
-  "bytecode": "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a72305820c26f4349aacdcaf16b5414f653e836ab6dba25d110059192e9851fd5b79740cb0029",
-  "deployedBytecode": "0x6060604052600080fd00a165627a7a72305820c26f4349aacdcaf16b5414f653e836ab6dba25d110059192e9851fd5b79740cb0029",
-  "sourceMap": "27:50:2:-;;;49:25;;;;;;;;27:50;;;;;;",
-  "deployedSourceMap": "27:50:2:-;;;;;",
-  "source": "pragma solidity ^0.4.17;\n\n\ncontract Raffle {\n    function Raffle(){\n\n    }\n\n}\n",
+  "bytecode": "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a72305820b39175e4dc988153f860d8fd322cef458d9f0719ef58c238ca6331487777ebeb0029",
+  "deployedBytecode": "0x6060604052600080fd00a165627a7a72305820b39175e4dc988153f860d8fd322cef458d9f0719ef58c238ca6331487777ebeb0029",
+  "sourceMap": "51:207:2:-;;;96:32;;;;;;;;51:207;;;;;;",
+  "deployedSourceMap": "51:207:2:-;;;;;",
+  "source": "pragma solidity ^0.4.17;\n\nimport \"./Players.sol\";\n\ncontract Raffle {\n\n    Players players;\n\n    function Raffle() public{\n\n    }\n\n    function create() private{\n\n    }\n\n    function getWinnerNumber() private{\n\n    }\n\n    function destroy() private{\n\n    }\n\n}\n",
   "sourcePath": "/Users/Nacho/ETHEREUM/Raffle/contracts/Raffle.sol",
   "ast": {
     "attributes": {
       "absolutePath": "/Users/Nacho/ETHEREUM/Raffle/contracts/Raffle.sol",
       "exportedSymbols": {
         "Raffle": [
-          325
+          350
         ]
       }
     },
@@ -33,9 +33,24 @@
             ".17"
           ]
         },
-        "id": 320,
+        "id": 330,
         "name": "PragmaDirective",
         "src": "0:24:2"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 329,
+          "absolutePath": "/Users/Nacho/ETHEREUM/Raffle/contracts/Players.sol",
+          "file": "./Players.sol",
+          "scope": 351,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 331,
+        "name": "ImportDirective",
+        "src": "26:23:2"
       },
       {
         "attributes": {
@@ -49,12 +64,40 @@
           "documentation": null,
           "fullyImplemented": true,
           "linearizedBaseContracts": [
-            325
+            350
           ],
           "name": "Raffle",
-          "scope": 326
+          "scope": 351
         },
         "children": [
+          {
+            "attributes": {
+              "constant": false,
+              "name": "players",
+              "scope": 350,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "contract Players",
+              "value": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "contractScope": null,
+                  "name": "Players",
+                  "referencedDeclaration": 328,
+                  "type": "contract Players"
+                },
+                "id": 332,
+                "name": "UserDefinedTypeName",
+                "src": "74:7:2"
+              }
+            ],
+            "id": 333,
+            "name": "VariableDeclaration",
+            "src": "74:15:2"
+          },
           {
             "attributes": {
               "constant": false,
@@ -65,7 +108,7 @@
               ],
               "name": "Raffle",
               "payable": false,
-              "scope": 325,
+              "scope": 350,
               "stateMutability": "nonpayable",
               "superFunction": null,
               "visibility": "public"
@@ -78,9 +121,9 @@
                   ]
                 },
                 "children": [],
-                "id": 321,
+                "id": 334,
                 "name": "ParameterList",
-                "src": "64:2:2"
+                "src": "111:2:2"
               },
               {
                 "attributes": {
@@ -89,9 +132,9 @@
                   ]
                 },
                 "children": [],
-                "id": 322,
+                "id": 335,
                 "name": "ParameterList",
-                "src": "66:0:2"
+                "src": "120:0:2"
               },
               {
                 "attributes": {
@@ -100,24 +143,186 @@
                   ]
                 },
                 "children": [],
-                "id": 323,
+                "id": 336,
                 "name": "Block",
-                "src": "66:8:2"
+                "src": "120:8:2"
               }
             ],
-            "id": 324,
+            "id": 337,
             "name": "FunctionDefinition",
-            "src": "49:25:2"
+            "src": "96:32:2"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "implemented": true,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "create",
+              "payable": false,
+              "scope": 350,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "private"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 338,
+                "name": "ParameterList",
+                "src": "149:2:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 339,
+                "name": "ParameterList",
+                "src": "159:0:2"
+              },
+              {
+                "attributes": {
+                  "statements": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 340,
+                "name": "Block",
+                "src": "159:8:2"
+              }
+            ],
+            "id": 341,
+            "name": "FunctionDefinition",
+            "src": "134:33:2"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "implemented": true,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "getWinnerNumber",
+              "payable": false,
+              "scope": 350,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "private"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 342,
+                "name": "ParameterList",
+                "src": "197:2:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 343,
+                "name": "ParameterList",
+                "src": "207:0:2"
+              },
+              {
+                "attributes": {
+                  "statements": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 344,
+                "name": "Block",
+                "src": "207:8:2"
+              }
+            ],
+            "id": 345,
+            "name": "FunctionDefinition",
+            "src": "173:42:2"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "implemented": true,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "destroy",
+              "payable": false,
+              "scope": 350,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "private"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 346,
+                "name": "ParameterList",
+                "src": "237:2:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 347,
+                "name": "ParameterList",
+                "src": "247:0:2"
+              },
+              {
+                "attributes": {
+                  "statements": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 348,
+                "name": "Block",
+                "src": "247:8:2"
+              }
+            ],
+            "id": 349,
+            "name": "FunctionDefinition",
+            "src": "221:34:2"
           }
         ],
-        "id": 325,
+        "id": 350,
         "name": "ContractDefinition",
-        "src": "27:50:2"
+        "src": "51:207:2"
       }
     ],
-    "id": 326,
+    "id": 351,
     "name": "SourceUnit",
-    "src": "0:78:2"
+    "src": "0:259:2"
   },
   "compiler": {
     "name": "solc",
@@ -127,9 +332,9 @@
     "4447": {
       "events": {},
       "links": {},
-      "address": "0xe134eee40a4a313a413e9b1da94bb5d01b79f433"
+      "address": "0xbab15d629b84e2c9575da294ab24b227e15fa02f"
     }
   },
   "schemaVersion": "1.0.1",
-  "updatedAt": "2018-01-02T23:56:43.061Z"
+  "updatedAt": "2018-01-03T16:18:50.406Z"
 }
