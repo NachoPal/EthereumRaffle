@@ -1,7 +1,11 @@
 pragma solidity ^0.4.17;
 
+import "./Raffles.sol";
 
-contract Players {
+
+contract Players is Raffles{
+
+    //Raffles raffles;
 
     event PlayerAdded(bytes32 name, uint numAttempts, int balance);
     event PlayerDeleted(address playerAddress, bytes32 name);
@@ -44,7 +48,7 @@ contract Players {
     }
 
     function addressAtIndex(uint _index) public view returns(address playerAddress){
-        //Make sure I don't try to read a index that doesn't exist??
+        //Make sure I don't try to read a index that doesn't exist
         require(_index < counter());
 
         playerAddress = playersAddresses[_index];
@@ -90,8 +94,15 @@ contract Players {
         PlayerDeleted(_playerAddress, name);
     }
 
-    function play() public{
+    function play(uint _index) external payable {
+        //Check the Player exists
+        require(isRegistered(msg.sender));
 
+        //Check the Raffle exists and is not finished
+        Raffle raffle = raffles[_index];
+        require(isActiveRaffle(raffle));
+
+        raffle.players[msg.sender]++;
     }
 
 }
