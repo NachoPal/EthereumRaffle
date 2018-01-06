@@ -15,6 +15,7 @@ contract Players is Raffles{
         uint index;
         bool exists;
         bytes32 name;
+        bytes32[] raffles;
         uint numAttempts;
         int balance;
     }
@@ -94,15 +95,20 @@ contract Players is Raffles{
         PlayerDeleted(_playerAddress, name);
     }
 
-    function play(uint _index) external payable {
+    function play(uint _id) external payable {
         //Check the Player exists
         require(isRegistered(msg.sender));
 
         //Check the Raffle exists and is not finished
-        Raffle raffle = raffles[_index];
+        Raffle raffle = raffles[_id];
         require(isActiveRaffle(raffle));
 
-        raffle.players[msg.sender]++;
+        uint nextTicketNumber = raffle.lastTicketNumber + 1;
+
+        raffle.ticketOwner[nextTicketNumber] = msg.sender;
+        raffle.playerTicketsNumbers[msg.sender].push(nextTicketNumber);
+
+        raffle.lastTicketNumber = nextTicketNumber;
     }
 
 }
