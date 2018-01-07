@@ -34,7 +34,7 @@ contract Players is Raffles{
         uint index = playersAddresses.push(msg.sender) - 1;
 
         //Save in mapping(address => Player)
-        bytes32[] raffles;
+        bytes32[] memory raffles;
 
         players[msg.sender] = Player({index: index, exists:true, name: _name, numAttempts: 0, balance: 0, raffles: raffles});
 
@@ -100,14 +100,14 @@ contract Players is Raffles{
         require(isRegistered(msg.sender));
 
         //Check the Raffle exists and is not finished
-        if (raffles[_id].exists && raffles[_id].finished == false) {
+        //if (raffles[_id].exists && raffles[_id].finished == false) {
             uint nextTicketNumber = raffles[_id].lastTicketNumber + 1;
 
             raffles[_id].ticketOwner[nextTicketNumber] = msg.sender;
             raffles[_id].playerTicketsNumbers[msg.sender].push(nextTicketNumber);
 
             raffles[_id].lastTicketNumber = nextTicketNumber;
-        }
+        //}
     }
 
 }

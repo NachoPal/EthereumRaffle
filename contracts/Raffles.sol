@@ -33,7 +33,7 @@ contract Raffles {
 //        active = (_raffle.exists) && (_raffle.finished == false);
 //    }
 
-    function create(uint _price, uint _lifespan) private returns(bool){
+    function create(uint _price, uint _lifespan) public returns(bool){
         Raffle memory raffle = Raffle(0,head,true,false,_price,_lifespan,0,0);
 
         bytes32 id = keccak256(raffle.price,raffle.lifespan,now,length);
@@ -43,6 +43,14 @@ contract Raffles {
 
         head = id;
         length = length + 1;
+    }
+
+    function getOwnerByTicket(bytes32 _raffleAddress, uint _ticketNumber) public view returns(address owner){
+        owner = raffles[_raffleAddress].ticketOwner[_ticketNumber];
+    }
+
+    function getTicketsByOwner(bytes32 _raffleAddress, address _ownerAddress) external view returns(uint[] tickets){
+        tickets = raffles[_raffleAddress].playerTicketsNumbers[_ownerAddress];
     }
 
     function getWinnerNumber() private{
