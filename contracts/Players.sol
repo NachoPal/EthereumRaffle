@@ -5,8 +5,6 @@ import "./Raffles.sol";
 
 contract Players is Raffles{
 
-    //Raffles raffles;
-
     event PlayerAdded(bytes32 name, uint numAttempts, int balance);
     event PlayerDeleted(address playerAddress, bytes32 name);
 
@@ -15,9 +13,9 @@ contract Players is Raffles{
         uint index;
         bool exists;
         bytes32 name;
-        bytes32[] raffles;
         uint numAttempts;
         int balance;
+        bytes32[] raffles;
     }
 
     address[] playersAddresses;
@@ -36,7 +34,9 @@ contract Players is Raffles{
         uint index = playersAddresses.push(msg.sender) - 1;
 
         //Save in mapping(address => Player)
-        players[msg.sender] = Player(index,true,_name,0,0);
+        bytes32[] raffles;
+
+        players[msg.sender] = Player({index: index, exists:true, name: _name, numAttempts: 0, balance: 0, raffles: raffles});
 
         //Call to the event
         PlayerAdded(_name,0,0);
@@ -95,20 +95,19 @@ contract Players is Raffles{
         PlayerDeleted(_playerAddress, name);
     }
 
-    function play(uint _id) external payable {
+    function play(bytes32 _id) public payable {
         //Check the Player exists
         require(isRegistered(msg.sender));
 
         //Check the Raffle exists and is not finished
-        Raffle raffle = raffles[_id];
-        require(isActiveRaffle(raffle));
+        if (raffles[_id].exists && raffles[_id].finished == false) {
+            uint nextTicketNumber = raffles[_id].lastTicketNumber + 1;
 
-        uint nextTicketNumber = raffle.lastTicketNumber + 1;
+            raffles[_id].ticketOwner[nextTicketNumber] = msg.sender;
+            raffles[_id].playerTicketsNumbers[msg.sender].push(nextTicketNumber);
 
-        raffle.ticketOwner[nextTicketNumber] = msg.sender;
-        raffle.playerTicketsNumbers[msg.sender].push(nextTicketNumber);
-
-        raffle.lastTicketNumber = nextTicketNumber;
+            raffles[_id].lastTicketNumber = nextTicketNumber;
+        }
     }
 
 }

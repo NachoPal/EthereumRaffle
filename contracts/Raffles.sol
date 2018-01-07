@@ -15,11 +15,11 @@ contract Raffles {
         uint price;
         uint lifespan;
 
-        mapping (uint => address) ticketOwner;
-        mapping (address => uint[]) playerTicketsNumbers;
-
         uint lastTicketNumber;
         uint winnerTicket;
+
+        mapping (uint => address) ticketOwner;
+        mapping (address => uint[]) playerTicketsNumbers;
     }
 
     //Linked list of Raffle
@@ -27,18 +27,18 @@ contract Raffles {
     mapping (bytes32 => Raffle) public raffles;
 
 
-    function Raffles() {}
+    function Raffles() public {}
 
-    function isActiveRaffle(_raffle) public view returns(bool active) {
-        active = (_raffle.exists) && (_raffle.finished == false);
-    }
+//    function isActiveRaffle(Raffle _raffle) external view returns(bool active) {
+//        active = (_raffle.exists) && (_raffle.finished == false);
+//    }
 
     function create(uint _price, uint _lifespan) private returns(bool){
-        Raffle memory raffle = Raffle(0,head,true,false,_price,_lifespan);
+        Raffle memory raffle = Raffle(0,head,true,false,_price,_lifespan,0,0);
 
-        bytes32 id = sha3(raffle.price,raffle.lifespan,now,length);
+        bytes32 id = keccak256(raffle.price,raffle.lifespan,now,length);
         raffles[id] = raffle;
-        raffle = raffle[id];
+        raffle = raffles[id];
         raffle.id = id;
 
         head = id;
