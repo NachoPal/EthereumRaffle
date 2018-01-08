@@ -1,9 +1,7 @@
 pragma solidity ^0.4.17;
 
-import "./Raffles.sol";
 
-
-contract Players is Raffles{
+contract Players {
 
     event PlayerAdded(bytes32 name, uint numAttempts, int balance);
     event PlayerDeleted(address playerAddress, bytes32 name);
@@ -26,7 +24,7 @@ contract Players is Raffles{
         registered = players[_address].exists;
     }
 
-    function register(bytes32 _name) public returns(address newPlayerAddress){
+    function registerPlayer(bytes32 _name) public returns(address newPlayerAddress){
         //Check if the Player already exist
         require(isRegistered(msg.sender) == false);
 
@@ -44,18 +42,18 @@ contract Players is Raffles{
         newPlayerAddress = msg.sender;
     }
 
-    function counter() public view returns(uint count) {
+    function countTotalPlayers() public view returns(uint count) {
         count = playersAddresses.length;
     }
 
-    function addressAtIndex(uint _index) public view returns(address playerAddress){
+    function playerAddressAtIndex(uint _index) public view returns(address playerAddress){
         //Make sure I don't try to read a index that doesn't exist
-        require(_index < counter());
+        require(_index < countTotalPlayers());
 
         playerAddress = playersAddresses[_index];
     }
 
-    function byAddress(address _playerAddress) public view returns(bytes32 name, uint numAttempts, int balance) {
+    function playerByAddress(address _playerAddress) public view returns(bytes32 name, uint numAttempts, int balance) {
         //Check if we are trying to retrieve info from a existing Player
         require(isRegistered(_playerAddress));
 
@@ -64,7 +62,7 @@ contract Players is Raffles{
         balance = players[_playerAddress].balance;
     }
 
-    function destroy(address _playerAddress) public {
+    function destroyPlayer(address _playerAddress) public {
         //Check that the account to be deleted exist
         //Check only the owner of the account is going to delete it
         require(isRegistered(msg.sender) && msg.sender == _playerAddress);
@@ -93,21 +91,6 @@ contract Players is Raffles{
 
 
         PlayerDeleted(_playerAddress, name);
-    }
-
-    function play(bytes32 _id) public payable {
-        //Check the Player exists
-        require(isRegistered(msg.sender));
-
-        //Check the Raffle exists and is not finished
-        //if (raffles[_id].exists && raffles[_id].finished == false) {
-            uint nextTicketNumber = raffles[_id].lastTicketNumber + 1;
-
-            raffles[_id].ticketOwner[nextTicketNumber] = msg.sender;
-            raffles[_id].playerTicketsNumbers[msg.sender].push(nextTicketNumber);
-
-            raffles[_id].lastTicketNumber = nextTicketNumber;
-        //}
     }
 
 }
