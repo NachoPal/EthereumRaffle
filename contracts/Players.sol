@@ -92,5 +92,4 @@ contract Players {
 
         PlayerDeleted(_playerAddress, name);
     }
-
 }

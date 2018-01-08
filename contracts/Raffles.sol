@@ -71,6 +71,8 @@ contract Raffles is Players{
 
             raffles[_raffleId].lastTicketNumber = nextTicketNumber;
         }
+
+        //ASOCIAR RAFFLES CON PLAYER, PARA QUE CADA PLAYERS SEPA QUE RAFFLES ESTA JUGANDO
     }
 
 //    function destroy(uint _index) private{
