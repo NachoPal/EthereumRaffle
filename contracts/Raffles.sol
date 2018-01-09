@@ -15,10 +15,12 @@ contract Raffles is Players, Ownership {
         bool exists;
         bool finished;
         uint price; //10000000000000000 Wei are 0.01 Eth, currently around 10$
+        uint startsAt;
         uint endsAt;
-
         uint lastTicketNumber;
+
         uint winnerTicket;
+        address winnerPlayer;
 
         mapping (uint => address) ticketOwner;
         mapping (address => uint[]) playerTicketsNumbers;
@@ -29,9 +31,15 @@ contract Raffles is Players, Ownership {
     mapping (bytes32 => Raffle) public raffles;
 
 
-    function isActiveRaffle(bytes32 _raffleId) public view returns(bool active) {
-        active = (raffles[_raffleId].exists) && (raffles[_raffleId].endsAt >= now);
+    function isActiveRaffle(bytes32 _raffleId) public view returns(bool) {
+        (raffles[_raffleId].exists) && (raffles[_raffleId].endsAt >= now);
     }
+
+
+    function isFinishedRaffle(bytes32 _raffleId) public view returns(bool) {
+        (raffles[_raffleId].exists) && (raffles[_raffleId].endsAt <= now);
+    }
+
 
     function isBettingRafflePrice(bytes32 _raffleId)
         public view returns(bool rightPrice)
@@ -41,9 +49,9 @@ contract Raffles is Players, Ownership {
 
 
     function create(uint _price, uint _lifespan) public returns(bool){
-        uint memory raffleEnds = now + _lifespan;
+        uint memory endsAt = now + _lifespan;
 
-        Raffle memory raffle = Raffle(0,head,true,false,_price,raffleEnds,0,0);
+        Raffle memory raffle = Raffle(0,head,true,false,_price,now,endsAt,0,0);
 
         bytes32 id = keccak256(raffle.price,raffle.lifespan,now,length);
         raffles[id] = raffle;
@@ -89,24 +97,54 @@ contract Raffles is Players, Ownership {
 
         //Add raffle to player's raffles list
         players[msg.sender].raffles.push(_raffleId);
-
     }
 
-    function getWinnerPlayer() private returns(address winnerPlayer) {
+    //This function has to be called manually by one of the owners
+    //once they know lifespan has expired. It's impossible to make the contract to call
+    //this function itself. Only possible making use of external API as:
+    //Ethereum Alarm Clock - http://www.ethereum-alarm-clock.com/
+    //They'll call the function for you when scheduled.
+    function getWinner(bytes32 _raffleId)
+        external isOwner(msg.sender)
+        returns(uint ticketNumber, bytes32 playerAddress, bytes32 name)
+    {
+        //Check the Raffle exists and is finished
+        require(isFinishedRaffle(_raffleId));
 
+        ticketNumber = getWinnerNumber(_raffleId);
+
+        (playerAddress, name) = getWinnerPlayer(_raffleId, ticketNumber);
+
+        finishRaffle(_raffleId, ticketNumber, playerAddress);
     }
 
-    function getWinnerNumber(bytes32 _raffleId)
-        external isOwner(msg.sender) returns(uint number){
-        //Check that only an owner is able to finish the raffle
 
-        Raffle memory raffle = raffles[_raffleId];
-
-        number = uint(block.blockhash(block.number - 1))%raffle.lastTicketNumber + 1;
-
-
+    //Is not possible to get a random number in a deterministic network, so this way
+    //is not safe. Only way is to call to an external API Oracle to calculate it.
+    function getWinnerNumber(bytes32 _raffle)
+        private returns(uint number)
+    {
+        //It's not a safe way, blockhash can be changed by miner in order to make
+        //its ticket number winner
+        number = (block.blockhash(block.number - 1))%_raffle.lastTicketNumber + 1;
     }
 
+
+    function getWinnerPlayer(bytes32 _raffleId, uint _ticketNumber)
+        private returns(bytes32 player, bytes32 name)
+    {
+        player = ownerByTicket(_raffleId, _ticketNumber);
+        name = players[player].name;
+    }
+
+
+    function finishRaffle(bytes32 _raffleId, uint _ticketNumber, address _playerAddress)
+        internal
+    {
+        raffles[_raffleId].winnerTicket = _winnerTicket;
+        raffles[_raffleId].winnerPlayer = _winnerPlayer;
+        raffles[_raffleId].finished = true;
+    }
 
 
     function withdrawPrize() external {

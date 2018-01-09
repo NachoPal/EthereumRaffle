@@ -15,6 +15,7 @@ contract Ownership {
 
     modifier isOwner(address _address) {
         require(owners[_address]);
+        _;
     }
 
     //Adding new owners.
