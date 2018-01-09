@@ -20,9 +20,11 @@ contract Players {
 
     mapping (address => Player) public players;
 
+
     function isRegistered(address _address) public view returns(bool registered){
         registered = players[_address].exists;
     }
+
 
     function registerPlayer(bytes32 _name) public returns(address newPlayerAddress){
         //Check if the Player already exist
@@ -42,9 +44,11 @@ contract Players {
         newPlayerAddress = msg.sender;
     }
 
+
     function countTotalPlayers() public view returns(uint count) {
         count = playersAddresses.length;
     }
+
 
     function playerAddressAtIndex(uint _index) public view returns(address playerAddress){
         //Make sure I don't try to read a index that doesn't exist
@@ -52,6 +56,7 @@ contract Players {
 
         playerAddress = playersAddresses[_index];
     }
+
 
     function playerByAddress(address _playerAddress) public view returns(bytes32 name, uint numAttempts, int balance) {
         //Check if we are trying to retrieve info from a existing Player
@@ -61,6 +66,12 @@ contract Players {
         numAttempts = players[_playerAddress].numAttempts;
         balance = players[_playerAddress].balance;
     }
+
+
+    function playerRaffles(address _playerAddress) external view returns(bytes32[] playedRaffles) {
+        playedRaffles = players[_playerAddress].raffles;
+    }
+
 
     function destroyPlayer(address _playerAddress) public {
         //Check that the account to be deleted exist
