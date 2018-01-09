@@ -21,8 +21,8 @@ contract Players {
     mapping (address => Player) public players;
 
 
-    function isRegistered(address _address) public view returns(bool registered){
-        registered = players[_address].exists;
+    function isRegistered(address _address) public view returns(bool){
+        return players[_address].exists;
     }
 
 

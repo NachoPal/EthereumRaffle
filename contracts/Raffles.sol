@@ -32,12 +32,14 @@ contract Raffles is Players, Ownership {
 
 
     function isActiveRaffle(bytes32 _raffleId) public view returns(bool) {
-        (raffles[_raffleId].exists) && (raffles[_raffleId].endsAt >= now);
+        return (raffles[_raffleId].exists) && (raffles[_raffleId].endsAt >= now);
     }
 
 
-    function isFinishedRaffle(bytes32 _raffleId) public view returns(bool) {
-        (raffles[_raffleId].exists) && (raffles[_raffleId].endsAt <= now);
+    function playingTimeHasExpired(bytes32 _raffleId) public view returns(bool) {
+        return (raffles[_raffleId].exists) &&
+               (raffles[_raffleId].endsAt <= now) &&
+               (raffles[_raffleId].finished == false);
     }
 
 
@@ -108,7 +110,7 @@ contract Raffles is Players, Ownership {
         external isOwner(msg.sender)
         returns(uint ticketNumber, address playerAddress, bytes32 name)
     {
-        //Check the Raffle exists and is finished
+        //Check the Raffle exists, playing time has expired but there has not finished
         require(isFinishedRaffle(_raffleId));
 
         ticketNumber = getWinnerNumber(_raffleId);
@@ -122,7 +124,7 @@ contract Raffles is Players, Ownership {
     //Is not possible to get a random number in a deterministic network, so this way
     //is not safe. Only way is to call to an external API Oracle to calculate it.
     function getWinnerNumber(bytes32 _raffleId)
-        private returns(uint number)
+        private view returns(uint number)
     {
         //It's not a safe way, blockhash can be changed by miner in order to make
         //its ticket number winner
@@ -131,7 +133,7 @@ contract Raffles is Players, Ownership {
 
 
     function getWinnerPlayer(bytes32 _raffleId, uint _ticketNumber)
-        private returns(address player, bytes32 name)
+        private view returns(address player, bytes32 name)
     {
         player = ownerByTicket(_raffleId, _ticketNumber);
         name = players[player].name;
