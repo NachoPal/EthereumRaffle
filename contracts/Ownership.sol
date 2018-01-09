@@ -8,7 +8,7 @@ contract Ownership {
     address public originalOwner = msg.sender;
     mapping (address => bool) owners;
 
-    function Ownership() {
+    function Ownership() public {
         //Add owner to the list of owners
         owners[originalOwner] = true;
     }
@@ -19,7 +19,7 @@ contract Ownership {
     }
 
     //Adding new owners.
-    function addOwner(address _newOwner) returns(bool) {
+    function addOwner(address _newOwner) external returns(bool) {
         //Only the original owner has the right to add new ones
         if(msg.sender == originalOwner) {
             owners[_newOwner] = true;
@@ -29,11 +29,11 @@ contract Ownership {
         }
     }
 
-    function removeOwner(address _toRemoveOwner) returns(bool) {
+    function removeOwner(address _toRemoveOwner) external returns(bool) {
         //Only the original owner has the right to add new ones
         //Make sure the original owner doesn't remove itself
         if(msg.sender == originalOwner && msg.sender != _toRemoveOwner) {
-            owners[_newOwner] = false;
+            owners[_toRemoveOwner] = false;
             return true;
         }else {
             return false;

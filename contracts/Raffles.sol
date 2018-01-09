@@ -49,14 +49,14 @@ contract Raffles is Players, Ownership {
 
 
     function create(uint _price, uint _lifespan) public returns(bool){
-        uint memory endsAt = now + _lifespan;
+        Raffle memory raffle = Raffle(0,head,true,false,_price,now,now + _lifespan,0,0,0);
 
-        Raffle memory raffle = Raffle(0,head,true,false,_price,now,endsAt,0,0);
-
-        bytes32 id = keccak256(raffle.price,raffle.lifespan,now,length);
+        bytes32 id = keccak256(raffle.price,now,length);
         raffles[id] = raffle;
-        raffle = raffles[id];
-        raffle.id = id;
+
+        //raffle = raffles[id];
+        //raffle.id = id;
+        raffles[id].id = id;
 
         head = id;
         length = length + 1;
@@ -106,7 +106,7 @@ contract Raffles is Players, Ownership {
     //They'll call the function for you when scheduled.
     function getWinner(bytes32 _raffleId)
         external isOwner(msg.sender)
-        returns(uint ticketNumber, bytes32 playerAddress, bytes32 name)
+        returns(uint ticketNumber, address playerAddress, bytes32 name)
     {
         //Check the Raffle exists and is finished
         require(isFinishedRaffle(_raffleId));
@@ -121,17 +121,17 @@ contract Raffles is Players, Ownership {
 
     //Is not possible to get a random number in a deterministic network, so this way
     //is not safe. Only way is to call to an external API Oracle to calculate it.
-    function getWinnerNumber(bytes32 _raffle)
+    function getWinnerNumber(bytes32 _raffleId)
         private returns(uint number)
     {
         //It's not a safe way, blockhash can be changed by miner in order to make
         //its ticket number winner
-        number = (block.blockhash(block.number - 1))%_raffle.lastTicketNumber + 1;
+        number = uint(block.blockhash(block.number - 1))%raffles[_raffleId].lastTicketNumber + 1;
     }
 
 
     function getWinnerPlayer(bytes32 _raffleId, uint _ticketNumber)
-        private returns(bytes32 player, bytes32 name)
+        private returns(address player, bytes32 name)
     {
         player = ownerByTicket(_raffleId, _ticketNumber);
         name = players[player].name;
@@ -141,8 +141,8 @@ contract Raffles is Players, Ownership {
     function finishRaffle(bytes32 _raffleId, uint _ticketNumber, address _playerAddress)
         internal
     {
-        raffles[_raffleId].winnerTicket = _winnerTicket;
-        raffles[_raffleId].winnerPlayer = _winnerPlayer;
+        raffles[_raffleId].winnerTicket = _ticketNumber;
+        raffles[_raffleId].winnerPlayer = _playerAddress;
         raffles[_raffleId].finished = true;
     }
 
