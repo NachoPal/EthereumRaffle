@@ -36,7 +36,12 @@ contract Players {
         //Save in mapping(address => Player)
         bytes32[] memory raffles;
 
-        players[msg.sender] = Player({index: index, exists:true, name: _name, numAttempts: 0, balance: 0, raffles: raffles});
+        players[msg.sender] = Player({index: index,
+                                    exists:true,
+                                    name: _name,
+                                    numAttempts: 0,
+                                    balance: 0,
+                                    raffles: raffles});
 
         //Call to the event
         PlayerAdded(_name,0,0);
@@ -50,7 +55,9 @@ contract Players {
     }
 
 
-    function playerAddressAtIndex(uint _index) public view returns(address playerAddress){
+    function playerAddressAtIndex(uint _index)
+        public view returns(address playerAddress)
+    {
         //Make sure I don't try to read a index that doesn't exist
         require(_index < countTotalPlayers());
 
@@ -58,7 +65,9 @@ contract Players {
     }
 
 
-    function playerByAddress(address _playerAddress) public view returns(bytes32 name, uint numAttempts, int balance) {
+    function playerByAddress(address _playerAddress)
+        public view returns(bytes32 name, uint numAttempts, int balance)
+    {
         //Check if we are trying to retrieve info from a existing Player
         require(isRegistered(_playerAddress));
 
@@ -68,7 +77,9 @@ contract Players {
     }
 
 
-    function playerRaffles(address _playerAddress) external view returns(bytes32[] playedRaffles) {
+    function playerRaffles(address _playerAddress)
+        external view returns(bytes32[] playedRaffles)
+    {
         playedRaffles = players[_playerAddress].raffles;
     }
 
