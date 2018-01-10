@@ -15,6 +15,7 @@ contract TestPlayer {
         bytes32 expectedName = "Nacho";
         bytes32 name;
 
+
         uint expectedNumAttempts = 0;
         uint numAttempts;
 
