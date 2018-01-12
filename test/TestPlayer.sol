@@ -48,4 +48,6 @@ contract TestPlayer {
 
         raffle.destroyPlayer(this);
     }
+
+    //ADD DESTROY PLAYER TEST
 }

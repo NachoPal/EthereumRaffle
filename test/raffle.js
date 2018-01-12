@@ -3,19 +3,23 @@ var Raffle = artifacts.require("./Raffles.sol");
 contract('Raffle', function() {
 
   let raffle;
-  var expectedPrice = 10;
+  let head;
+  var expectedPrice = 10000000000000000;
   var expectedLifespan = 120;
+  var accountIndex = 0;
 
   beforeEach('setup contract for each test', async function () {
     raffle = await Raffle.deployed();
 
-    await raffle.registerPlayer('Nacho');
+    await raffle.registerPlayer('Nacho',{from: web3.eth.accounts[accountIndex]});
     await raffle.create(expectedPrice, expectedLifespan);
+
+    head = await raffle.head();
+
+    accountIndex = accountIndex + 1;
   });
 
-  it("Should create a Raffle", async function() {
-    //await raffle.create.call(expectedPrice, expectedLifespan);
-    let head = await raffle.head();
+  it("Create a Raffle", async function() {
 
     let raffles = await raffle.raffles(head);
 
@@ -55,10 +59,19 @@ contract('Raffle', function() {
         0,
         0,
         '0x0000000000000000000000000000000000000000'
-      ], "Didn't create the Raffle properly"
+      ], "It didn't create a Raffle properly"
     )
-
-
-
   });
+
+  it("A Player participate in the raffle", async function() {
+    await raffle.play(head,{value: expectedPrice, from: web3.eth.accounts[0]});
+
+    let player = await raffle.ownerByTicket(head, 1);
+    assert.equal(player, web3.eth.accounts[0], 'Player did not participate in the raffle');
+
+    let ticket = await raffle.ticketsByOwner(head, player);
+    assert.equal(ticket, 1, 'Player did not buy the correct ticket number');
+  });
+
+
 })
