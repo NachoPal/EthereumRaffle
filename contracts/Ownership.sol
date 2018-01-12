@@ -18,6 +18,11 @@ contract Ownership {
         _;
     }
 
+    modifier isOriginalOwner() {
+        require(msg.sender == originalOwner);
+        _;
+    }
+
     //Adding new owners.
     function addOwner(address _newOwner) external returns(bool) {
         //Only the original owner has the right to add new ones

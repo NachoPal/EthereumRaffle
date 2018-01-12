@@ -15,21 +15,15 @@ contract TestPlayer {
         bytes32 expectedName = "Nacho";
         bytes32 name;
 
+        uint expectedPendingWithdrawals = 0;
+        uint pendingWithdrawals;
 
-        uint expectedNumAttempts = 0;
-        uint numAttempts;
-
-        int expectedBalance = 0;
-        int balance;
-
-        (name, numAttempts, balance) = raffle.playerByAddress(this);
+        (name, pendingWithdrawals) = raffle.playerByAddress(this);
 
         Assert.equal(name, expectedName, "Player name registration didn't work.");
-        Assert.equal(numAttempts, expectedNumAttempts, "Player numAttempts registration didn't work.");
-        Assert.equal(balance, expectedBalance, "Player balance didn't work.");
+        Assert.equal(pendingWithdrawals, expectedPendingWithdrawals, "Player pending withdrawals didn't work.");
 
         raffle.destroyPlayer(this);
-
     }
 
     function testPlayersCounter() public {

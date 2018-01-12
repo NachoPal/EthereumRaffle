@@ -31,28 +31,43 @@ contract Raffles is Players, Ownership {
     mapping (bytes32 => Raffle) public raffles;
 
 
-    function isActiveRaffle(bytes32 _raffleId) public view returns(bool) {
+    function isActiveRaffle(bytes32 _raffleId)
+        public view returns(bool)
+    {
         return (raffles[_raffleId].exists) && (raffles[_raffleId].endsAt >= now);
     }
 
 
-    function playingTimeHasExpired(bytes32 _raffleId) public view returns(bool) {
+    function playingTimeHasExpired(bytes32 _raffleId)
+        public view returns(bool)
+    {
         return (raffles[_raffleId].exists) &&
                (raffles[_raffleId].endsAt <= now) &&
                (raffles[_raffleId].finished == false);
     }
 
 
-    function isBettingRafflePrice(bytes32 _raffleId)
-        public view returns(bool rightPrice)
+    function isBettingRafflePrice(bytes32 _raffleId, address _playerAddress)
+        public view returns(bool)
     {
-        rightPrice = (msg.value == raffles[_raffleId].price);
+        uint rafflePrice = raffles[_raffleId].price;
+        Player memory player = players[_playerAddress];
+
+        return (msg.value == rafflePrice) || (player.pendingWithdrawals >= rafflePrice);
+    }
+
+    function hasEnoughFunds(address _playerAddress, uint _amount)
+        public view returns(bool)
+    {
+        return players[_playerAddress].pendingWithdrawals >= _amount;
     }
 
     //Doesn't make sense to return a value from a function that modifies the contract
     //state (transactions) because you have to wait until it is processed, something
     //that might be never happen.
-    function create(uint _price, uint _lifespan) public returns(bytes32){
+    function create(uint _price, uint _lifespan)
+        public returns(bytes32)
+    {
         Raffle memory raffle = Raffle(0,head,true,false,_price,now,now + _lifespan,0,0,0);
 
         bytes32 id = keccak256(raffle.price,now,length);
@@ -86,14 +101,21 @@ contract Raffles is Players, Ownership {
     }
 
 
-    function play(bytes32 _raffleId) public payable {
+    function play(bytes32 _raffleId)
+        public payable
+    {
         //Check the Player exists
         require(isRegistered(msg.sender));
 
         //Check the Raffle exists and is not finished
         require(isActiveRaffle(_raffleId));
 
-        require(isBettingRafflePrice(_raffleId));
+        require(isBettingRafflePrice(_raffleId, msg.sender));
+
+        //Player can bet with his pending withdrawals
+        if (msg.value == 0) {
+            players[msg.sender].pendingWithdrawals -= raffles[_raffleId].price;
+        }
 
         uint nextTicketNumber = raffles[_raffleId].lastTicketNumber + 1;
 
@@ -103,6 +125,7 @@ contract Raffles is Players, Ownership {
 
         //Add raffle to player's raffles list
         players[msg.sender].raffles.push(_raffleId);
+
     }
 
     //This function has to be called manually by one of the owners
@@ -122,6 +145,9 @@ contract Raffles is Players, Ownership {
         (playerAddress, name) = getWinnerPlayer(_raffleId, ticketNumber);
 
         finishRaffle(_raffleId, ticketNumber, playerAddress);
+
+        givePrizeToWinner(_raffleId, playerAddress);
+
     }
 
 
@@ -152,14 +178,31 @@ contract Raffles is Players, Ownership {
         raffles[_raffleId].finished = true;
     }
 
-
-    function withdrawPrize() external {
-
+    function givePrizeToWinner(bytes32 _raffleId, address _playerAddress)
+        internal
+    {
+        players[_playerAddress].pendingWithdrawals = raffles[_raffleId].lastTicketNumber * raffles[_raffleId].price;
     }
 
+    //Explain withdraw pattern
+    function playerWithdraw(uint _amount)
+        external
+    {
+        require(hasEnoughFunds(msg.sender, _amount));
 
-    //    function destroy(uint _index) private{
-//
-//    }
+        // Remember to subtract the amount before
+        // sending to prevent re-entrancy attacks
+        players[msg.sender].pendingWithdrawals -= _amount;
+
+        msg.sender.transfer(_amount);
+    }
+
+    function ownerWithdraw(uint _amount)
+        external isOriginalOwner
+    {
+        //Todo: Comprobar que no hay fondos bloqueados
+        require(_amount <= this.balance);
+        originalOwner.transfer(_amount);
+    }
 
 }

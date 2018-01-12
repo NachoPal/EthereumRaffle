@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 
 contract Players {
 
-    event PlayerAdded(bytes32 name, uint numAttempts, int balance);
+    event PlayerAdded(bytes32 name, uint pendingWithdrawals);
     event PlayerDeleted(address playerAddress, bytes32 name);
 
 
@@ -11,8 +11,7 @@ contract Players {
         uint index;
         bool exists;
         bytes32 name;
-        uint numAttempts;
-        int balance;
+        uint pendingWithdrawals;
         bytes32[] raffles;
     }
 
@@ -21,12 +20,16 @@ contract Players {
     mapping (address => Player) public players;
 
 
-    function isRegistered(address _address) public view returns(bool){
+    function isRegistered(address _address)
+        public view returns(bool)
+    {
         return players[_address].exists;
     }
 
 
-    function registerPlayer(bytes32 _name) public returns(address newPlayerAddress){
+    function registerPlayer(bytes32 _name)
+        public returns(address newPlayerAddress)
+    {
         //Check if the Player already exist
         require(isRegistered(msg.sender) == false);
 
@@ -39,18 +42,19 @@ contract Players {
         players[msg.sender] = Player({index: index,
                                     exists:true,
                                     name: _name,
-                                    numAttempts: 0,
-                                    balance: 0,
+                                    pendingWithdrawals: 0,
                                     raffles: raffles});
 
         //Call to the event
-        PlayerAdded(_name,0,0);
+        PlayerAdded(_name,0);
 
         newPlayerAddress = msg.sender;
     }
 
 
-    function countTotalPlayers() public view returns(uint count) {
+    function countTotalPlayers()
+        public view returns(uint count)
+    {
         count = playersAddresses.length;
     }
 
@@ -66,14 +70,13 @@ contract Players {
 
 
     function playerByAddress(address _playerAddress)
-        public view returns(bytes32 name, uint numAttempts, int balance)
+        public view returns(bytes32 name, uint pendingWithdrawals)
     {
         //Check if we are trying to retrieve info from a existing Player
         require(isRegistered(_playerAddress));
 
         name = players[_playerAddress].name;
-        numAttempts = players[_playerAddress].numAttempts;
-        balance = players[_playerAddress].balance;
+        pendingWithdrawals = players[_playerAddress].pendingWithdrawals;
     }
 
 
@@ -108,9 +111,6 @@ contract Players {
         //Remove info from deleted Player stored in mapping(address => Player)
         players[_playerAddress].name = "0x0";
         players[_playerAddress].exists = false;
-        players[_playerAddress].numAttempts = 0;
-        players[_playerAddress].balance = 0;
-
 
         PlayerDeleted(_playerAddress, name);
     }
