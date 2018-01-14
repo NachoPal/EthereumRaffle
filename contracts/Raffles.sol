@@ -6,6 +6,8 @@ import "./Ownership.sol";
 
 contract Raffles is Players, Ownership {
 
+    uint heldBalance = 0;
+
     //Also used as nonce
     uint public length = 0;
 
@@ -61,6 +63,16 @@ contract Raffles is Players, Ownership {
     {
         return players[_playerAddress].pendingWithdrawals >= _amount;
     }
+
+    function hasEnoughAvailableBalance(uint _amount)
+        public view returns(bool)
+    {
+        return _amount <= (this.balance - heldBalance);
+    }
+
+
+    //===============================================================================
+
 
     //Doesn't make sense to return a value from a function that modifies the contract
     //state (transactions) because you have to wait until it is processed, something
@@ -181,6 +193,7 @@ contract Raffles is Players, Ownership {
     function givePrizeToWinner(bytes32 _raffleId, address _playerAddress)
         internal
     {
+        heldBalance += raffles[_raffleId].lastTicketNumber * raffles[_raffleId].price;
         players[_playerAddress].pendingWithdrawals = raffles[_raffleId].lastTicketNumber * raffles[_raffleId].price;
     }
 
@@ -194,14 +207,18 @@ contract Raffles is Players, Ownership {
         // sending to prevent re-entrancy attacks
         players[msg.sender].pendingWithdrawals -= _amount;
 
+        heldBalance -= _amount;
+
         msg.sender.transfer(_amount);
     }
 
     function ownerWithdraw(uint _amount)
         external isOriginalOwner
     {
-        //Todo: Comprobar que no hay fondos bloqueados
-        require(_amount <= this.balance);
+        //Check if there is enough available balance because maybe some players haven't
+        //withdrawn their prizes
+        require(hasEnoughAvailableBalance(_amount));
+
         originalOwner.transfer(_amount);
     }
 

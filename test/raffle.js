@@ -6,17 +6,18 @@ contract('Raffle', function() {
   let head;
   var expectedPrice = 10000000000000000;
   var expectedLifespan = 120;
-  var accountIndex = 0;
 
-  beforeEach('setup contract for each test', async function () {
+  beforeEach('Create players and a raffle for each test', async function () {
     raffle = await Raffle.deployed();
 
-    await raffle.registerPlayer('Nacho',{from: web3.eth.accounts[accountIndex]});
+    await raffle.registerPlayer('Nacho');
     await raffle.create(expectedPrice, expectedLifespan);
 
     head = await raffle.head();
+  });
 
-    accountIndex = accountIndex + 1;
+  aferEach('Delete a player after each tests', async function() {
+    await raffle.destroyPlayer(web3.eth.accounts[0]);
   });
 
   it("Create a Raffle", async function() {
