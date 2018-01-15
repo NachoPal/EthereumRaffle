@@ -6,6 +6,8 @@ import "./Ownership.sol";
 
 contract Raffles is Players, Ownership {
 
+    event WinnerSelected(uint ticketNumber, address playerAddress, bytes32 name);
+
     uint heldBalance = 0;
 
     //Also used as nonce
@@ -159,6 +161,8 @@ contract Raffles is Players, Ownership {
         finishRaffle(_raffleId, ticketNumber, playerAddress);
 
         givePrizeToWinner(_raffleId, playerAddress);
+
+        WinnerSelected(ticketNumber, playerAddress, name);
 
     }
 
