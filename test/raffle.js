@@ -148,35 +148,26 @@ contract('Raffle', function(accounts) {
     assert.equal(winnerPlayer, expectedWinnerPlayer, 'Winner player was not choose properly');
     assert.equal(pendingWithdrawals.toNumber(), expectedPendingWithdrawals, 'Winner player did not receive the prize properly');
 
-    let initialWinnerBalance = await web3.eth.getBalance(winnerPlayer);
-
-    console.log(`Initial WinnerBalance: ${initialWinnerBalance}`);
-    console.log(`Expected pending withdrawals: ${expectedPendingWithdrawals}`);
+    let initialWinnerBalance = web3.eth.getBalance(winnerPlayer);
 
     let response = await raffle.playerWithdraw(expectedPendingWithdrawals, {from: winnerPlayer});
 
     let txHash = response.tx;
 
-    let tx = await web3.eth.getTransaction(txHash);
+    let tx = web3.eth.getTransaction(txHash);
     let gasPrice = tx.gasPrice;
-    let gas = tx.gas;
 
-    let txCost = gasPrice * gas;
+    let txReceipt = web3.eth.getTransactionReceipt(txHash);
+    let gasUsed = txReceipt.gasUsed;
 
-    console.log(`Tx cost ${txCost}`);
+    let txCost = gasPrice * gasUsed;
 
-    let finalWinnerBalance = await web3.eth.getBalance(winnerPlayer);
+    let finalWinnerBalance = web3.eth.getBalance(winnerPlayer);
 
     let expectedFinalWinnerBalance = initialWinnerBalance.toNumber() +
                                      expectedPendingWithdrawals - txCost;
 
-
-    console.log(`Expected Final Balance ${expectedFinalWinnerBalance}`);
-    console.log(`Final Balance ${finalWinnerBalance}`);
-
-    //
     assert.equal(finalWinnerBalance.toNumber(), expectedFinalWinnerBalance, 'Winner player did not withdraw the prize properly');
-
 
   });
 
